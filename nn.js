@@ -94,7 +94,6 @@ NeuralNetwork.prototype.train = function(inputs_array, targets_array) {
 NeuralNetwork.prototype.query = function(inputs_array) {
 
   var inputs = Matrix.fromArray(inputs_array);
-  var targets = Matrix.fromArray(targets_array);
 
   var hidden_inputs = Matrix.dot(this.wih, inputs);
   var hidden_outputs = Matrix.map(hidden_inputs, sigmoid);
