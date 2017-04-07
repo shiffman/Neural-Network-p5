@@ -19,7 +19,6 @@ function setup() {
   // console.log(prediction);
   // nn.train([1, 2, 3], [5, 5, 5]);
 
-
   // number of input, hidden and output nodes
   var input_nodes = 784;
   var hidden_nodes = 200;
@@ -31,7 +30,7 @@ function setup() {
   // create instance of neural network
   nn = new NeuralNetwork(input_nodes, hidden_nodes, output_nodes, learning_rate)
 
-  epochs = 5
+  var epochs = 5;
 
   for (var i = 0; i < epochs; i++) {
     console.log('Epoch: ' + i);
@@ -70,7 +69,7 @@ function setup() {
     // # the index of the highest value corresponds to the label
 
 
-    label = max(outputs);
+    label = findMax(outputs);
     console.log(label, correct_label);
     // append correct or incorrect to list
     if (label == correct_label) {
@@ -82,4 +81,16 @@ function setup() {
     }
   }
 
+}
+
+function findMax(list) {
+  var record = 0;
+  var index = 0;
+  for (var i = 0; i < list.length; i++) {
+    if (list[i] > record) {
+      record = list[i];
+      index = i;
+    }
+  }
+  return index;
 }
