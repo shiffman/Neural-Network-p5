@@ -31,7 +31,7 @@ function setup() {
   // create instance of neural network
   nn = new NeuralNetwork(input_nodes, hidden_nodes, output_nodes, learning_rate)
 
-  epochs = 10
+  epochs = 5
 
   for (var i = 0; i < epochs; i++) {
     console.log('Epoch: ' + i);
@@ -53,13 +53,33 @@ function setup() {
     }
   }
 
-  for (var j = 0; j < training.length; j++) {
-    // split the record by the ',' commas
-    var all_values = training[i].split(',');
+  // test the neural network
+
+  // scorecard for how well the network performs, initially empty
+  var scorecard = [];
+  // go through all the records in the test data set
+  for(var j = 0; j < testing.length; j++) {
+    var all_values = testing[j].split(',');
+    var correct_label = floor(Number(all_values[0]));
+    // scale and shift the inputs
     var inputs = [];
     for (var k = 1; k < all_values.length; k++) {
       inputs[k - 1] = map(Number(all_values[i]), 0, 255, 0, 0.99) + 0.01;
     }
-    //nn.query(inputs).log();
+    var outputs = nn.query(inputs).toArray();
+    // # the index of the highest value corresponds to the label
+
+
+    label = max(outputs);
+    console.log(label, correct_label);
+    // append correct or incorrect to list
+    if (label == correct_label) {
+      // network's answer matches correct answer, add 1 to scorecard
+      scorecard.push(1);
+    } else {
+      // network 's answer doesn't match correct answer, add 0 to scorecard
+      scorecard.push(0);
+    }
   }
+
 }

@@ -75,6 +75,16 @@ Matrix.prototype.randomize = function() {
   }
 }
 
+Matrix.prototype.toArray = function() {
+  var arr = [];
+  for (var i = 0; i < this.rows; i++) {
+    for (var j = 0; j < this.cols; j++) {
+      arr.push(this.matrix[i][j]);
+    }
+  }
+  return arr;
+}
+
 
 Matrix.prototype.log = function() {
   var s = ''
