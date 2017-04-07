@@ -18,8 +18,8 @@ function NeuralNetwork(inputnodes, hiddennodes, outputnodes, learningrate) {
   // w12 w22 etc
   this.wih = new Matrix(this.hnodes, this.inodes);
   this.who = new Matrix(this.onodes, this.hnodes);
-  this.wih.setA();
-  this.who.setB();
+  this.wih.randomize();
+  this.who.randomize();
   // this.wih.log();
   // this.who.log();
 
