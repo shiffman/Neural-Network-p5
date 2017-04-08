@@ -26,8 +26,8 @@ var learning_rate = 0.1;
 var scorecard = new Array(100);
 
 function preload() {
-  training = loadStrings('data/mnist_test.csv');
-  testing = loadStrings('data/mnist_train_100.csv');
+  training = loadStrings('data/mnist_train.csv');
+  testing = loadStrings('data/mnist_test_100.csv');
 }
 
 function setup() {
