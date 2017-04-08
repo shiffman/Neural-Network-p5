@@ -5,6 +5,9 @@
 // Based on "Make Your Own Neural Network" by Tariq Rashid
 // https://github.com/makeyourownneuralnetwork/
 
+// This is my own ridiculous Matrix implemenation
+// Would probably make more sense to use math.js or something else!
+
 Matrix.transpose = function(array) {
   var m = new Matrix(1, array.length);
   for (var i = 0; i < array.length; i++) {
