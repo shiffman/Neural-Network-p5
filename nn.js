@@ -13,6 +13,10 @@ function sigmoid(x) {
   return y;
 }
 
+// This is the Sigmoid derivative!
+function dSigmoid(x) {
+  return x * (1 - x);
+}
 
 // Neural Network constructor function
 function NeuralNetwork(inputnodes, hiddennodes, outputnodes, learningrate) {
@@ -61,7 +65,7 @@ NeuralNetwork.prototype.train = function(inputs_array, targets_array) {
   // Error is TARGET - OUTPUT
   var output_errors = Matrix.subtract(targets, outputs);
 
-  // Now we are starting back propogation
+  // Now we are starting back propogation!
 
   // Transpose hidden <-> output weights
   var whoT = this.who.transpose();
@@ -69,50 +73,46 @@ NeuralNetwork.prototype.train = function(inputs_array, targets_array) {
   var hidden_errors = Matrix.dot(whoT, output_errors)
 
   // Calculate the gradient, this is much nicer in python!
-  var gradient_output = output_errors.copy();
-  gradient_output.multiply(outputs);
-
-  // 1 - final_outputs
-  function inversion(x) {
-    return 1 - x;
-  }
-  var final_outputs_invert = Matrix.map(outputs, inversion);
-  gradient_output.multiply(final_outputs_invert);
-  // Learning rate
+  var gradient_output = Matrix.map(outputs, dSigmoid);
+  // Weight by errors and learing rate
+  gradient_output.multiply(output_errors);
   gradient_output.multiply(this.lr);
 
-  // Transpose hidden outputs
-  var hidden_outputs_T = hidden_outputs.transpose();
-
-  // Change in weights
-
-  // Next layer, back propogation!
-  var gradient_hidden = hidden_errors.copy();
-  gradient_hidden.multiply(hidden_outputs);
-  var hidden_outputs_invert = Matrix.map(hidden_outputs, inversion);
-  gradient_hidden.multiply(hidden_outputs_invert);
+  // Gradients for next layer, more back propogation!
+  var gradient_hidden = Matrix.map(hidden_outputs, dSigmoid);
+  // Weight by errors and learning rate
+  gradient_hidden.multiply(hidden_errors);
   gradient_hidden.multiply(this.lr);
 
-  var inputs_T = inputs.transpose();
-
+  // Change in weights from HIDDEN --> OUTPUT
+  var hidden_outputs_T = hidden_outputs.transpose();
   var deltaW_output = Matrix.dot(gradient_output, hidden_outputs_T);
   this.who.add(deltaW_output);
+
+  // Change in weights from INPUT --> HIDDEN
+  var inputs_T = inputs.transpose();
   var deltaW_hidden = Matrix.dot(gradient_hidden, inputs_T);
   this.wih.add(deltaW_hidden);
 }
 
 
+// Query the network!
 NeuralNetwork.prototype.query = function(inputs_array) {
 
+  // Turn input array into a matrix
   var inputs = Matrix.fromArray(inputs_array);
 
+  // The input to the hidden layer is the weights (wih) multiplied by inputs
   var hidden_inputs = Matrix.dot(this.wih, inputs);
+  // The outputs of the hidden layer pass through sigmoid activation function
   var hidden_outputs = Matrix.map(hidden_inputs, sigmoid);
 
-  var final_inputs = Matrix.dot(this.who, hidden_outputs);
+  // The input to the output layer is the weights (who) multiplied by hidden layer
+  var output_inputs = Matrix.dot(this.who, hidden_outputs);
 
-  // Final output
-  var final_outputs = Matrix.map(final_inputs, sigmoid);
+  // The output of the network passes through sigmoid activation function
+  var outputs = Matrix.map(output_inputs, sigmoid);
 
-  return final_outputs.toArray();
+  // Return the result as an array
+  return outputs.toArray();
 }
