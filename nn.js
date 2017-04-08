@@ -2,8 +2,8 @@
 // Nature of Code: Intelligence and Learning
 // https://github.com/shiffman/NOC-S17-2-Intelligence-Learning
 
-// Based on:
-// https://github.com/makeyourownneuralnetwork/makeyourownneuralnetwork/
+// Based on "Make Your Own Neural Network" by Tariq Rashid
+// https://github.com/makeyourownneuralnetwork/
 
 function NeuralNetwork(inputnodes, hiddennodes, outputnodes, learningrate) {
 

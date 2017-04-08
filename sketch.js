@@ -2,14 +2,22 @@
 // Nature of Code: Intelligence and Learning
 // https://github.com/shiffman/NOC-S17-2-Intelligence-Learning
 
+// Based on "Make Your Own Neural Network" by Tariq Rashid
+// https://github.com/makeyourownneuralnetwork/
+
+// Neural Network
 var nn;
 
+// Train and Testing Data
 var training;
 var testing;
 
+// Where are we in the training and testing data
+// (for animation)
 var trainingIndex = 0;
 var testingIndex = 0;
 
+// How many times through all the training data
 var epochs = 0;
 
 // Network configuration
@@ -17,14 +25,14 @@ var input_nodes = 784;
 var hidden_nodes = 256;
 var output_nodes = 10;
 
-// learning rate
+// Learning rate
 var learning_rate = 0.1;
 
-// var trainingImage;
-// var testingImage;
+// How is the network doing
+var totalCorrect = 0;
+var totalGuesses = 0;
 
-var scorecard = [];
-
+// Reporting status to a paragraph
 var statusP;
 
 function preload() {
@@ -33,79 +41,59 @@ function preload() {
 }
 
 function setup() {
+  // Canvas
+  createCanvas(280, 100);
 
-  // var nn = new NeuralNetwork(3, 3, 3, 0.3);
-  // var prediction = nn.query([1, 1, 1]);
-  // console.log(prediction);
-  // nn.train([1, 2, 3], [5, 5, 5]);
-
-  // number of input, hidden and output nodes
-
-  // create instance of neural network
+  // Create the neural network
   nn = new NeuralNetwork(input_nodes, hidden_nodes, output_nodes, learning_rate)
 
-  createCanvas(280, 100);
-  trainingImage = createImage(28, 28, RGB);
-
+  // Status paragraph
   statusP = createP('');
 }
 
 function draw() {
   background(200);
 
-  // One new image per frame
-  var w = 2;
-  var input = train();
-  drawImage(input, 16, 16, w);
-  fill(0);
-  textSize(12);
-  text('training', 16, 86);
 
+  // Train (this does just one image per cycle through draw)
+  var traindata = train();
+  // Test
   var result = test();
+  var testdata = result[0];
+  var guess = result[1];
+  var correct = result[2];
 
-  drawImage(result[0], 128, 16, w);
+  // Draw the training and testing image
+  drawImage(traindata, 16, 16, 2, 'training');
+  drawImage(testdata, 128, 16, 2, 'test');
+
+  // Draw the resulting guess
   fill(0);
-  textSize(12);
-  text('testing', 128, 86);
-
-  fill(0);
-  rect(200, 16, w * 28, w * 28);
-
-  if (result[2]) {
+  rect(200, 16, 2 * 28, 2 * 28);
+  // Was it right or wrong?
+  if (correct) {
     fill(0, 255, 0);
   } else {
     fill(255, 0, 0);
   }
   textSize(60);
-  text(result[1], 212, 64);
+  text(guess, 212, 64);
 
-  if (result[2]) {
-    scorecard.push(1);
-  } else {
-    scorecard.push(0);
+  // Tally total correct
+  if (correct) {
+    totalCorrect++;
   }
-  if (scorecard.length > 1000) {
-    scorecard.splice(0, 1);
-  }
+  totalGuesses++;
 
-  var sum = 0;
-  for (var n = 0; n < scorecard.length; n++) {
-    sum += scorecard[n];
-  }
-
-  var status = 'performance: ' + nf(sum / scorecard.length, 0, 2);
+  // Show performance and # of epochs
+  var status = 'performance: ' + nf(totalCorrect / totalGuesses, 0, 2);
   status += '<br>';
   var percent = trainingIndex / training.length;
   status += 'epochs: ' + epochs + ' (' + nf(percent, 2, 3) + '%)';
   statusP.html(status);
-
-
-
-  //test();
-
 }
 
-function drawImage(values, xoff, yoff, w) {
+function drawImage(values, xoff, yoff, w, txt) {
   var dim = floor(sqrt(values.length));
   for (var k = 0; k < values.length; k++) {
     var brightness = values[k] * 256;
@@ -115,6 +103,9 @@ function drawImage(values, xoff, yoff, w) {
     noStroke();
     rect(xoff + x * w, yoff + y * w, w, w);
   }
+  fill(0);
+  textSize(12);
+  text(txt, xoff, yoff + w * 35);
 }
 
 

@@ -1,3 +1,10 @@
+// Daniel Shiffman
+// Nature of Code: Intelligence and Learning
+// https://github.com/shiffman/NOC-S17-2-Intelligence-Learning
+
+// Based on "Make Your Own Neural Network" by Tariq Rashid
+// https://github.com/makeyourownneuralnetwork/
+
 Matrix.transpose = function(array) {
   var m = new Matrix(1, array.length);
   for (var i = 0; i < array.length; i++) {
@@ -151,21 +158,3 @@ Matrix.prototype.multiply = function(other) {
     }
   }
 }
-
-
-
-// Matrix.prototype.setA = function() {
-//   this.matrix = [
-//     [-0.3552989, 0.42279678, -0.01449485],
-//     [0.13459197, -1.55088288, -0.11870999],
-//     [-0.0786683, -0.39298027, -0.09739265]
-//   ];
-// }
-//
-// Matrix.prototype.setB = function() {
-//   this.matrix = [
-//     [0.51771456, 0.1930628, -0.09438124],
-//     [0.64838142, -0.70872041, -0.53059963],
-//     [-0.77339891, 0.08266008, 0.08499081]
-//   ];
-// }
