@@ -103,5 +103,5 @@ NeuralNetwork.prototype.query = function(inputs_array) {
   // Final output
   var final_outputs = Matrix.map(final_inputs, sigmoid);
 
-  return final_outputs;
+  return final_outputs.toArray();
 }

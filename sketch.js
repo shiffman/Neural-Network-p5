@@ -35,6 +35,9 @@ var totalGuesses = 0;
 // Reporting status to a paragraph
 var statusP;
 
+// Load training and testing data
+// Note this is not the full dataset
+// From: https://pjreddie.com/projects/mnist-in-csv/
 function preload() {
   training = loadStrings('data/mnist_train.csv');
   testing = loadStrings('data/mnist_test_100.csv');
@@ -93,75 +96,105 @@ function draw() {
   statusP.html(status);
 }
 
+
+// Draw the array of floats as an image
 function drawImage(values, xoff, yoff, w, txt) {
-  var dim = floor(sqrt(values.length));
+  // it's a 28 x 28 image
+  var dim = 28;
+
+  // For every value
   for (var k = 0; k < values.length; k++) {
+    // Scale up to 256
     var brightness = values[k] * 256;
+    // Find x and y
     var x = k % dim;
     var y = floor(k / dim);
+    // Draw rectangle
     fill(brightness);
     noStroke();
     rect(xoff + x * w, yoff + y * w, w, w);
   }
+
+  // Draw a label below
   fill(0);
   textSize(12);
   text(txt, xoff, yoff + w * 35);
 }
 
 
-
+// Function to train the network
 function train() {
 
-  // split the record by the ',' commas
-  var all_values = training[trainingIndex].split(',');
+  // Grab a row from the CSV
+  var values = training[trainingIndex].split(',');
+
+  // Make an input array to the neural network
   var inputs = [];
 
-  for (var k = 1; k < all_values.length; k++) {
-    inputs[k - 1] = map(Number(all_values[k]), 0, 255, 0, 0.99) + 0.01;
+  // Starts at index 1
+  for (var i = 1; i < values.length; i++) {
+    inputs[i - 1] = map(Number(values[i]), 0, 255, 0, 0.99) + 0.01;
   }
 
-  targets = new Array(output_nodes);
-  for (var k = 0; k < targets.length; k++) {
+  // Now create an array of targets
+  targets = [];
+  // Everything by default is wrong
+  for (var k = 0; k < output_nodes; k++) {
     targets[k] = 0.01;
   }
-  targets[floor(Number(all_values[0]))] = 0.99;
+  // The first spot is the class
+  var label = Number(values[0]);
+  // So it should get a 0.99 output
+  targets[label] = 0.99;
   //console.log(targets);
 
+  // Train with these inputs and targets
   nn.train(inputs, targets);
 
+  // Go to the next training data point
   trainingIndex++;
   if (trainingIndex == training.length) {
     traingIndex = 0;
+    // Once cycle through all training data is one epoch
     epochs++;
   }
 
+  // Return the inputs to draw them
   return inputs;
 
 }
 
 
+// Function to test the network
 function test() {
-  // test the neural network
 
-  // scorecard for how well the network performs, initially empty
-  // go through all the records in the test data set
-  var all_values = testing[testingIndex].split(',');
-  var correct_label = floor(Number(all_values[0]));
-  // scale and shift the inputs
+  // Grab a row from the CSV
+  var values = training[trainingIndex].split(',');
+
+  // Make an input array to the neural network
   var inputs = [];
-  for (var k = 1; k < all_values.length; k++) {
-    inputs[k - 1] = map(Number(all_values[k]), 0, 255, 0, 0.99) + 0.01;
+
+  // Starts at index 1
+  for (var i = 1; i < values.length; i++) {
+    inputs[i - 1] = map(Number(values[i]), 0, 255, 0, 0.99) + 0.01;
   }
-  var outputs = nn.query(inputs).toArray();
 
-  // # the index of the highest value corresponds to the label
-  label = findMax(outputs);
+  // The first spot is the class
+  var label = Number(values[0]);
 
+  // Run the data through the network
+  var outputs = nn.query(inputs);
+
+  // Find the index with the highest probability
+  var guess = findMax(outputs);
+
+  // Was the network right or wrong?
   var correct = false;
-  if (label == correct_label) {
+  if (guess == label) {
     correct = true;
   }
 
+  // Switch to a new testing data point every so often
   if (frameCount % 30 == 0) {
     testingIndex++;
     if (testingIndex == testing.length) {
@@ -169,18 +202,25 @@ function test() {
     }
   }
 
+  // For reporting in draw return the results
   return [inputs, label, correct];
 
 }
 
+// A function to find the maximum value in an array
 function findMax(list) {
+
+  // Highest so far?
   var record = 0;
   var index = 0;
+  // Check every element
   for (var i = 0; i < list.length; i++) {
+    // Higher?
     if (list[i] > record) {
       record = list[i];
       index = i;
     }
   }
+  // Return index of highest
   return index;
 }
