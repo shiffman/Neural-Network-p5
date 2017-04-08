@@ -30,17 +30,17 @@ function setup() {
   // create instance of neural network
   nn = new NeuralNetwork(input_nodes, hidden_nodes, output_nodes, learning_rate)
 
-  var epochs = 5;
+  epochs = 5;
 
   for (var i = 0; i < epochs; i++) {
     console.log('Epoch: ' + i);
     // go through all records in the training data set
     for (var j = 0; j < training.length; j++) {
       // split the record by the ',' commas
-      var all_values = training[i].split(',');
+      var all_values = training[j].split(',');
       var inputs = [];
       for (var k = 1; k < all_values.length; k++) {
-        inputs[k - 1] = map(Number(all_values[i]), 0, 255, 0, 0.99) + 0.01;
+        inputs[k - 1] = map(Number(all_values[k]), 0, 255, 0, 0.99) + 0.01;
       }
       targets = new Array(output_nodes);
       for (var k = 0; k < targets.length; k++) {
@@ -63,7 +63,7 @@ function setup() {
     // scale and shift the inputs
     var inputs = [];
     for (var k = 1; k < all_values.length; k++) {
-      inputs[k - 1] = map(Number(all_values[i]), 0, 255, 0, 0.99) + 0.01;
+      inputs[k - 1] = map(Number(all_values[k]), 0, 255, 0, 0.99) + 0.01;
     }
     var outputs = nn.query(inputs).toArray();
     // # the index of the highest value corresponds to the label
