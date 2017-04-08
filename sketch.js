@@ -23,7 +23,7 @@ var learning_rate = 0.1;
 // var trainingImage;
 // var testingImage;
 
-var scorecard = new Array(1000);
+var scorecard = [];
 
 var statusP;
 
@@ -69,7 +69,7 @@ function draw() {
   text('testing', 128, 86);
 
   fill(0);
-  rect(200, 16, w*28, w*28);
+  rect(200, 16, w * 28, w * 28);
 
   if (result[2]) {
     fill(0, 255, 0);
@@ -84,17 +84,19 @@ function draw() {
   } else {
     scorecard.push(0);
   }
-  scorecard.splice(0, 1);
+  if (scorecard.length > 1000) {
+    scorecard.splice(0, 1);
+  }
 
   var sum = 0;
   for (var n = 0; n < scorecard.length; n++) {
-    sum += scorecard[n] || 0;
+    sum += scorecard[n];
   }
 
-  var status = 'performance: ' + nf(sum / scorecard.length,0,2);
+  var status = 'performance: ' + nf(sum / scorecard.length, 0, 2);
   status += '<br>';
   var percent = trainingIndex / training.length;
-  status += 'epochs: ' + epochs + ' (' + nf(percent,2,3)  +'%)';
+  status += 'epochs: ' + epochs + ' (' + nf(percent, 2, 3) + '%)';
   statusP.html(status);
 
 
