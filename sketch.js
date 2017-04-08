@@ -91,8 +91,8 @@ function draw() {
   // Show performance and # of epochs
   var status = 'performance: ' + nf(totalCorrect / totalGuesses, 0, 2);
   status += '<br>';
-  var percent = trainingIndex / training.length;
-  status += 'epochs: ' + epochs + ' (' + nf(percent, 2, 3) + '%)';
+  var percent = 100 * trainingIndex / training.length;
+  status += 'epochs: ' + epochs + ' (' + nf(percent, 1, 2) + '%)';
   statusP.html(status);
 }
 
