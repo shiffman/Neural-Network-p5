@@ -8,63 +8,7 @@
 // This is my own ridiculous Matrix implemenation
 // Would probably make more sense to use math.js or something else!
 
-Matrix.transpose = function(array) {
-  var m = new Matrix(1, array.length);
-  for (var i = 0; i < array.length; i++) {
-    m.matrix[0][i] = array[i];
-  }
-  console.log(m);
-  return m;
-}
-
-Matrix.map = function(m, fn) {
-  var result = new Matrix(m.rows, m.cols);
-  for (var i = 0; i < result.rows; i++) {
-    for (var j = 0; j < result.cols; j++) {
-      result.matrix[i][j] = fn(m.matrix[i][j]);
-    }
-  }
-  return result;
-}
-
-Matrix.subtract = function(a, b) {
-  var result = new Matrix(a.rows, a.cols);
-  for (var i = 0; i < result.rows; i++) {
-    for (var j = 0; j < result.cols; j++) {
-      result.matrix[i][j] = a.matrix[i][j] - b.matrix[i][j];
-    }
-  }
-  return result;
-}
-
-
-Matrix.dot = function(a, b) {
-  if (a.cols != b.rows) {
-    console.log("error: incompatible sizes");
-  }
-  var result = new Matrix(a.rows, b.cols);
-  for (var i = 0; i < a.rows; i++) {
-    for (var j = 0; j < b.cols; j++) {
-      var sum = 0;
-      for (var k = 0; k < a.cols; k++) {
-        sum += a.matrix[i][k] * b.matrix[k][j];
-      }
-      result.matrix[i][j] = sum;
-    }
-  }
-  return result;
-}
-
-
-
-Matrix.fromArray = function(array) {
-  var m = new Matrix(array.length, 1);
-  for (var i = 0; i < array.length; i++) {
-    m.matrix[i][0] = array[i];
-  }
-  return m;
-}
-
+// Make a matrix full of zeros
 function Matrix(rows, cols) {
   this.rows = rows;
   this.cols = cols;
@@ -77,6 +21,7 @@ function Matrix(rows, cols) {
   }
 }
 
+// This fills the matrix with random values (gaussian distribution)
 Matrix.prototype.randomize = function() {
   for (var i = 0; i < this.rows; i++) {
     for (var j = 0; j < this.cols; j++) {
@@ -85,7 +30,9 @@ Matrix.prototype.randomize = function() {
   }
 }
 
+// Take the matrix and make it a 1 dimensional array
 Matrix.prototype.toArray = function() {
+  // Add all the values to the array
   var arr = [];
   for (var i = 0; i < this.rows; i++) {
     for (var j = 0; j < this.cols; j++) {
@@ -96,20 +43,8 @@ Matrix.prototype.toArray = function() {
 }
 
 
-Matrix.prototype.log = function() {
-  var s = ''
-  for (var i = 0; i < this.rows; i++) {
-    for (var j = 0; j < this.cols; j++) {
-      //s += nf(this.matrix[i][j], 2, 2) + ' ';
-      s += this.matrix[i][j] + ' ';
-    }
-    s += '\n';
-  }
-  console.log(s);
-}
-
-
-
+// This transposes a matrix
+// rows X cols --> cols X rows
 Matrix.prototype.transpose = function() {
   var result = new Matrix(this.cols, this.rows);
   for (var i = 0; i < result.rows; i++) {
@@ -120,6 +55,7 @@ Matrix.prototype.transpose = function() {
   return result;
 }
 
+// This makes a copy of the matrix
 Matrix.prototype.copy = function() {
   var result = new Matrix(this.rows, this.cols);
   for (var i = 0; i < result.rows; i++) {
@@ -130,13 +66,16 @@ Matrix.prototype.copy = function() {
   return result;
 }
 
+// This adds another matrix or a single value
 Matrix.prototype.add = function(other) {
+  // Are we trying to add a Matrix?
   if (other instanceof Matrix) {
     for (var i = 0; i < this.rows; i++) {
       for (var j = 0; j < this.cols; j++) {
         this.matrix[i][j] += other.matrix[i][j];
       }
     }
+    // Or just a single scalar value?
   } else {
     for (var i = 0; i < this.rows; i++) {
       for (var j = 0; j < this.cols; j++) {
@@ -146,13 +85,17 @@ Matrix.prototype.add = function(other) {
   }
 }
 
+// This multiplies another matrix or a single value
+// This is different than the dot() function!
 Matrix.prototype.multiply = function(other) {
+  // Are we trying to multiply a Matrix?
   if (other instanceof Matrix) {
     for (var i = 0; i < this.rows; i++) {
       for (var j = 0; j < this.cols; j++) {
         this.matrix[i][j] *= other.matrix[i][j];
       }
     }
+  // Or just a single scalar value?
   } else {
     for (var i = 0; i < this.rows; i++) {
       for (var j = 0; j < this.cols; j++) {
@@ -160,4 +103,64 @@ Matrix.prototype.multiply = function(other) {
       }
     }
   }
+}
+
+
+// These are some static functions to operate on a matrix
+
+// This is the trickiest one
+// Takes a function and applies it to all values in the matrix
+Matrix.map = function(m, fn) {
+  var result = new Matrix(m.rows, m.cols);
+  for (var i = 0; i < result.rows; i++) {
+    for (var j = 0; j < result.cols; j++) {
+      result.matrix[i][j] = fn(m.matrix[i][j]);
+    }
+  }
+  return result;
+}
+
+// Subtracts one matrix from another
+Matrix.subtract = function(a, b) {
+  var result = new Matrix(a.rows, a.cols);
+  for (var i = 0; i < result.rows; i++) {
+    for (var j = 0; j < result.cols; j++) {
+      result.matrix[i][j] = a.matrix[i][j] - b.matrix[i][j];
+    }
+  }
+  return result;
+}
+
+
+// Multiplies two matrices together
+Matrix.dot = function(a, b) {
+  // Won't work if columns of A don't equal columns of B
+  if (a.cols != b.rows) {
+    console.log("Incompatible matrix sizes!");
+    return;
+  }
+  // Make a new matrix
+  var result = new Matrix(a.rows, b.cols);
+  for (var i = 0; i < a.rows; i++) {
+    for (var j = 0; j < b.cols; j++) {
+      // Sum all the rows of A times columns of B
+      var sum = 0;
+      for (var k = 0; k < a.cols; k++) {
+        sum += a.matrix[i][k] * b.matrix[k][j];
+      }
+      // New value
+      result.matrix[i][j] = sum;
+    }
+  }
+  return result;
+}
+
+
+// Turn a 1 dimensional array into a matrix
+Matrix.fromArray = function(array) {
+  var m = new Matrix(array.length, 1);
+  for (var i = 0; i < array.length; i++) {
+    m.matrix[i][0] = array[i];
+  }
+  return m;
 }
