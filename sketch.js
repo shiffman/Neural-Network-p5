@@ -169,7 +169,7 @@ function train() {
 function test() {
 
   // Grab a row from the CSV
-  var values = training[trainingIndex].split(',');
+  var values = training[testingIndex].split(',');
 
   // Make an input array to the neural network
   var inputs = [];
@@ -203,7 +203,7 @@ function test() {
   }
 
   // For reporting in draw return the results
-  return [inputs, label, correct];
+  return [inputs, guess, correct];
 
 }
 

@@ -5,67 +5,78 @@
 // Based on "Make Your Own Neural Network" by Tariq Rashid
 // https://github.com/makeyourownneuralnetwork/
 
-function NeuralNetwork(inputnodes, hiddennodes, outputnodes, learningrate) {
-
-  // Set number of nodes in each input, hidden, output layer
-  this.inodes = inputnodes;
-  this.hnodes = hiddennodes;
-  this.onodes = outputnodes;
-
-  // link weight matrices, wih and who
-  // weights inside the arrays are w_i_j, where link is from node i to node j in the next layer
-  // w11 w21
-  // w12 w22 etc
-  this.wih = new Matrix(this.hnodes, this.inodes);
-  this.who = new Matrix(this.onodes, this.hnodes);
-  this.wih.randomize();
-  this.who.randomize();
-  // this.wih.log();
-  // this.who.log();
-
-  // learning rate
-  this.lr = learningrate;
-
-}
-
+// Sigmoid function
+// This is used for activation
+// https://en.wikipedia.org/wiki/Sigmoid_function
 function sigmoid(x) {
   var y = 1 / (1 + pow(Math.E, -x));
   return y;
 }
 
 
+// Neural Network constructor function
+function NeuralNetwork(inputnodes, hiddennodes, outputnodes, learningrate) {
 
+  // Number of nodes in layer (input, hidden, output)
+  // This network is limited to 3 layers
+  this.inodes = inputnodes;
+  this.hnodes = hiddennodes;
+  this.onodes = outputnodes;
+
+  // These are the weight matrices
+  // wih: weights from input to hidden
+  // who: weights from hidden to output
+  // weights inside the arrays are w_i_j
+  // where link is from node i to node j in the next layer
+  // Matrix is rows X columns
+  this.wih = new Matrix(this.hnodes, this.inodes);
+  this.who = new Matrix(this.onodes, this.hnodes);
+
+  // Start with random values
+  this.wih.randomize();
+  this.who.randomize();
+
+  // Learning rate
+  this.lr = learningrate;
+}
+
+// Train the network with inputs and targets
 NeuralNetwork.prototype.train = function(inputs_array, targets_array) {
 
+  // Turn input and target arrays into matrices
   var inputs = Matrix.fromArray(inputs_array);
   var targets = Matrix.fromArray(targets_array);
 
+  // The input to the hidden layer is the weights (wih) multiplied by inputs
   var hidden_inputs = Matrix.dot(this.wih, inputs);
+  // The outputs of the hidden layer pass through sigmoid activation function
   var hidden_outputs = Matrix.map(hidden_inputs, sigmoid);
 
-  var final_inputs = Matrix.dot(this.who, hidden_outputs);
+  // The input to the output layer is the weights (who) multiplied by hidden layer
+  var output_inputs = Matrix.dot(this.who, hidden_outputs);
 
-  // Final output
-  var final_outputs = Matrix.map(final_inputs, sigmoid);
+  // The output of the network passes through sigmoid activation function
+  var outputs = Matrix.map(output_inputs, sigmoid);
 
-  // Errors!
-  var output_errors = Matrix.subtract(targets, final_outputs);
+  // Error is TARGET - OUTPUT
+  var output_errors = Matrix.subtract(targets, outputs);
+
+  // Now we are starting back propogation
 
   // Transpose hidden <-> output weights
   var whoT = this.who.transpose();
-
-  // Hidden errors
+  // Hidden errors is output error multiplied by weights (who)
   var hidden_errors = Matrix.dot(whoT, output_errors)
 
   // Calculate the gradient, this is much nicer in python!
   var gradient_output = output_errors.copy();
-  gradient_output.multiply(final_outputs);
+  gradient_output.multiply(outputs);
 
   // 1 - final_outputs
   function inversion(x) {
     return 1 - x;
   }
-  var final_outputs_invert = Matrix.map(final_outputs, inversion);
+  var final_outputs_invert = Matrix.map(outputs, inversion);
   gradient_output.multiply(final_outputs_invert);
   // Learning rate
   gradient_output.multiply(this.lr);
