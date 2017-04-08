@@ -154,7 +154,7 @@ function train() {
   // Go to the next training data point
   trainingIndex++;
   if (trainingIndex == training.length) {
-    traingIndex = 0;
+    trainingIndex = 0;
     // Once cycle through all training data is one epoch
     epochs++;
   }
