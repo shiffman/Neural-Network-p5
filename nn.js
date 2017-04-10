@@ -18,8 +18,14 @@ function dSigmoid(x) {
   return x * (1 - x);
 }
 
+// Reverse sigmoid
+function logit(y) {
+  return log(y / (1 - y));
+}
+
 // Neural Network constructor function
 function NeuralNetwork(inputnodes, hiddennodes, outputnodes, learningrate) {
+
 
   // Number of nodes in layer (input, hidden, output)
   // This network is limited to 3 layers
@@ -115,4 +121,47 @@ NeuralNetwork.prototype.query = function(inputs_array) {
 
   // Return the result as an array
   return outputs.toArray();
+}
+
+
+NeuralNetwork.prototype.backquery = function(targets_array) {
+  // backquery the neural network
+  // we'll use the same termnimology to each item,
+  // eg target are the values at the right of the network, albeit used as input
+  // eg hidden_output is the signal to the right of the middle nodes
+  // transpose the targets list to a vertical array
+  var final_outputs = Matrix.fromArray(targets_array);
+
+  // calculate the signal into the final output layer
+  var final_inputs = Matrix.map(final_outputs, logit);
+
+  // calculate the signal out of the hidden layer
+  var whoT = this.who.transpose();
+  var hidden_outputs = Matrix.dot(whoT, final_inputs);
+
+  // scale them back to 0.01 to .99
+  // Normalize
+  var min = hidden_outputs.min();
+  hidden_outputs.add(-min);
+  var max = hidden_outputs.max();
+  hidden_outputs.multiply(1 / max);
+  hidden_outputs.multiply(0.98);
+  hidden_outputs.add(0.01);
+
+  // calculate the signal into the hideen layer
+  var hidden_inputs = Matrix.map(hidden_outputs, logit);
+
+  // calculate the signal out of the input layer
+  var wihT = this.wih.transpose();
+  var inputs = Matrix.dot(wihT, hidden_inputs);
+
+  // Normalize
+  var min = inputs.min();
+  inputs.add(-min);
+  var max = inputs.max();
+  inputs.multiply(1 / max);
+  inputs.multiply(0.98);
+  inputs.add(0.01);
+
+  return inputs.toArray();
 }

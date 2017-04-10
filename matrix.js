@@ -105,6 +105,31 @@ Matrix.prototype.multiply = function(other) {
   }
 }
 
+Matrix.prototype.min = function() {
+  var record = Infinity;
+  for (var i = 0; i < this.rows; i++) {
+    for (var j = 0; j < this.cols; j++) {
+      if (this.matrix[i][j] < record) {
+        record = this.matrix[i][j];
+      }
+    }
+  }
+  return record;
+}
+
+Matrix.prototype.max = function() {
+  var record = 0;
+  for (var i = 0; i < this.rows; i++) {
+    for (var j = 0; j < this.cols; j++) {
+      if (this.matrix[i][j] > record) {
+        record = this.matrix[i][j];
+      }
+    }
+  }
+  return record;
+}
+
+
 
 // These are some static functions to operate on a matrix
 

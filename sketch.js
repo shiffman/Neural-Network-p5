@@ -66,7 +66,7 @@ function mouseDragged() {
 
 function setup() {
   // Canvas
-  createCanvas(320, 500);
+  createCanvas(500, 500);
   // pixelDensity(1);
 
   // Create the neural network
@@ -157,7 +157,7 @@ function draw() {
   var inputs = [];
   smaller.loadPixels();
   for (var i = 0; i < smaller.pixels.length; i += 4) {
-    inputs[i/4] = map(smaller.pixels[i], 0, 255, 0, 0.99) + 0.01;
+    inputs[i / 4] = map(smaller.pixels[i], 0, 255, 0, 0.99) + 0.01;
   }
   var outputs = nn.query(inputs);
   var guess = findMax(outputs);
@@ -170,6 +170,15 @@ function draw() {
   text(guess, 212, uy + uw + 64);
 
 
+  var numbers = [];
+  for (var i = 0; i < 2; i++) {
+    for (j = 0; j < 10; j++) {
+      numbers[j] = 0.01;
+    }
+    numbers[i] = 0.99;
+    var dream = nn.backquery(numbers);
+    drawImage(dream, width - 4 * 28, i * 4 * 28 + i * 20, 4, i + ' dream');
+  }
 }
 
 
