@@ -35,6 +35,12 @@ var totalGuesses = 0;
 // Reporting status to a paragraph
 var statusP;
 
+var userPixels;
+var smaller;
+var ux = 16;
+var uy = 100;
+var uw = 280;
+
 // Load training and testing data
 // Note this is not the full dataset
 // From: https://pjreddie.com/projects/mnist-in-csv/
@@ -43,26 +49,54 @@ function preload() {
   testing = loadStrings('data/mnist_test_100.csv');
 }
 
+function mouseDragged() {
+  if (mouseX > ux && mouseY > uy && mouseX < ux + uw && mouseY < uy + uw) {
+    userPixels.fill(255);
+    userPixels.stroke(255);
+    userPixels.ellipse(mouseX - ux, mouseY - uy, 32, 32);
+    var img = userPixels.get();
+    smaller.copy(img, 0, 0, uw, uw, 0, 0, smaller.width, smaller.height);
+  }
+
+}
+
+
+
+
+
 function setup() {
   // Canvas
-  createCanvas(280, 100);
+  createCanvas(320, 500);
+  // pixelDensity(1);
 
   // Create the neural network
   nn = new NeuralNetwork(input_nodes, hidden_nodes, output_nodes, learning_rate)
 
   // Status paragraph
   statusP = createP('');
-  var button = createButton('pause');
-  button.mousePressed(toggle);
+  var pauseButton = createButton('pause');
+  pauseButton.mousePressed(toggle);
+
   function toggle() {
-    if (button.html() == 'pause') {
+    if (pauseButton.html() == 'pause') {
       noLoop();
-      button.html('continue');
+      pauseButton.html('continue');
     } else {
       loop();
-      button.html('pause');
+      pauseButton.html('pause');
     }
   }
+
+  var clearButton = createButton('clear');
+  clearButton.mousePressed(function() {
+    userPixels.background(0);
+  });
+
+
+  userPixels = createGraphics(280, 280);
+  userPixels.background(0);
+
+  smaller = createImage(28, 28, RGB);
 }
 
 
@@ -108,6 +142,30 @@ function draw() {
   var percent = 100 * trainingIndex / training.length;
   status += 'epochs: ' + epochs + ' (' + nf(percent, 1, 2) + '%)';
   statusP.html(status);
+
+
+  // User entered stuff:
+
+  image(userPixels, ux, uy);
+  image(smaller, 128, uy + uw + 16, 28 * 2, 28 * 2);
+
+  // Change the pixels from the user into something
+  var inputs = [];
+  smaller.loadPixels();
+  for (var i = 0; i < smaller.pixels.length; i += 4) {
+    inputs[i/4] = map(smaller.pixels[i], 0, 255, 0, 0.99) + 0.01;
+  }
+  var outputs = nn.query(inputs);
+  var guess = findMax(outputs);
+
+  // Draw the resulting guess
+  fill(0);
+  rect(200, uy + uw + 16, 2 * 28, 2 * 28);
+  fill(255);
+  textSize(60);
+  text(guess, 212, uy + uw + 64);
+
+
 }
 
 
