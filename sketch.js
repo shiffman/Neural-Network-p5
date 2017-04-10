@@ -92,14 +92,18 @@ function setup() {
     userPixels.background(0);
   });
 
+  var saveButton = createButton('save model');
+  saveButton.mousePressed(function() {
+    // Take the neural network object and download
+    saveJSON(nn, 'model.json');
+  });
+
 
   userPixels = createGraphics(280, 280);
   userPixels.background(0);
 
   smaller = createImage(28, 28, RGB);
 }
-
-
 
 
 function draw() {
