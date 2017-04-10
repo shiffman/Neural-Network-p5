@@ -52,7 +52,21 @@ function setup() {
 
   // Status paragraph
   statusP = createP('');
+  var button = createButton('pause');
+  button.mousePressed(toggle);
+  function toggle() {
+    if (button.html() == 'pause') {
+      noLoop();
+      button.html('continue');
+    } else {
+      loop();
+      button.html('pause');
+    }
+  }
 }
+
+
+
 
 function draw() {
   background(200);
