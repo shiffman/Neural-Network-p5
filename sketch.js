@@ -39,7 +39,7 @@ var userPixels;
 var smaller;
 var ux = 16;
 var uy = 100;
-var uw = 280;
+var uw = 140;
 
 // Load training and testing data
 // Note this is not the full dataset
@@ -53,7 +53,7 @@ function mouseDragged() {
   if (mouseX > ux && mouseY > uy && mouseX < ux + uw && mouseY < uy + uw) {
     userPixels.fill(255);
     userPixels.stroke(255);
-    userPixels.ellipse(mouseX - ux, mouseY - uy, 32, 32);
+    userPixels.ellipse(mouseX - ux, mouseY - uy, 16, 16);
     var img = userPixels.get();
     smaller.copy(img, 0, 0, uw, uw, 0, 0, smaller.width, smaller.height);
   }
@@ -66,7 +66,7 @@ function mouseDragged() {
 
 function setup() {
   // Canvas
-  createCanvas(320, 500);
+  createCanvas(320, 280);
   // pixelDensity(1);
 
   // Create the neural network
@@ -99,10 +99,12 @@ function setup() {
   });
 
 
-  userPixels = createGraphics(280, 280);
+  userPixels = createGraphics(uw, uw);
   userPixels.background(0);
 
   smaller = createImage(28, 28, RGB);
+  var img = userPixels.get();
+  smaller.copy(img, 0, 0, uw, uw, 0, 0, smaller.width, smaller.height);
 }
 
 
@@ -119,12 +121,13 @@ function draw() {
   var correct = result[2];
 
   // Draw the training and testing image
-  drawImage(traindata, 16, 16, 2, 'training');
-  drawImage(testdata, 128, 16, 2, 'test');
+  var colx = 180;
+  drawImage(traindata, ux, 16, 2, 'training');
+  drawImage(testdata, 180, 16, 2, 'test');
 
   // Draw the resulting guess
   fill(0);
-  rect(200, 16, 2 * 28, 2 * 28);
+  rect(246, 16, 2 * 28, 2 * 28);
   // Was it right or wrong?
   if (correct) {
     fill(0, 255, 0);
@@ -132,7 +135,7 @@ function draw() {
     fill(255, 0, 0);
   }
   textSize(60);
-  text(guess, 212, 64);
+  text(guess, 258, 64);
 
   // Tally total correct
   if (correct) {
@@ -151,23 +154,26 @@ function draw() {
   // User entered stuff:
 
   image(userPixels, ux, uy);
-  image(smaller, 128, uy + uw + 16, 28 * 2, 28 * 2);
+  fill(0);
+  textSize(12);
+  text('draw here', ux, uy + uw + 16);
+  image(smaller, 180, uy, 28 * 2, 28 * 2);
 
   // Change the pixels from the user into something
   var inputs = [];
   smaller.loadPixels();
   for (var i = 0; i < smaller.pixels.length; i += 4) {
-    inputs[i/4] = map(smaller.pixels[i], 0, 255, 0, 0.99) + 0.01;
+    inputs[i / 4] = map(smaller.pixels[i], 0, 255, 0, 0.99) + 0.01;
   }
   var outputs = nn.query(inputs);
   var guess = findMax(outputs);
 
   // Draw the resulting guess
   fill(0);
-  rect(200, uy + uw + 16, 2 * 28, 2 * 28);
+  rect(246, uy, 2 * 28, 2 * 28);
   fill(255);
   textSize(60);
-  text(guess, 212, uy + uw + 64);
+  text(guess, 258, uy + 48);
 
 
 }
