@@ -35,6 +35,7 @@ var totalGuesses = 0;
 // Reporting status to a paragraph
 var statusP;
 
+// This is for a user drawn image
 var userPixels;
 var smaller;
 var ux = 16;
@@ -49,21 +50,6 @@ function preload() {
   testing = loadStrings('data/mnist_test_1000.csv');
 }
 
-function mouseDragged() {
-  if (mouseX > ux && mouseY > uy && mouseX < ux + uw && mouseY < uy + uw) {
-    userPixels.fill(255);
-    userPixels.stroke(255);
-    userPixels.ellipse(mouseX - ux, mouseY - uy, 16, 16);
-    var img = userPixels.get();
-    smaller.copy(img, 0, 0, uw, uw, 0, 0, smaller.width, smaller.height);
-  }
-
-}
-
-
-
-
-
 function setup() {
   // Canvas
   createCanvas(320, 280);
@@ -77,6 +63,7 @@ function setup() {
   var pauseButton = createButton('pause');
   pauseButton.mousePressed(toggle);
 
+  // Toggle the state to start and stop
   function toggle() {
     if (pauseButton.html() == 'pause') {
       noLoop();
@@ -87,41 +74,70 @@ function setup() {
     }
   }
 
+  // This button clears the user pixels
   var clearButton = createButton('clear');
-  clearButton.mousePressed(function() {
+  clearButton.mousePressed(clearUserPixels);
+  // Just draw a black background
+  function clearUserPixels() {
     userPixels.background(0);
-  });
+  }
 
+  // Save the model
   var saveButton = createButton('save model');
-  saveButton.mousePressed(function() {
+  saveButton.mousePressed(saveModelJSON);
+  // Save all the model is a JSON file
+  // TODO: add reloading functionality!
+  function saveModelJSON() {
     // Take the neural network object and download
     saveJSON(nn, 'model.json');
-  });
+  }
 
 
+  // Create a blank user canvas
   userPixels = createGraphics(uw, uw);
   userPixels.background(0);
 
+  // Create a smaller 28x28 image
   smaller = createImage(28, 28, RGB);
+  // This is sort of silly, but I'm copying the user pixels
+  // so that we see a blank image to start
   var img = userPixels.get();
   smaller.copy(img, 0, 0, uw, uw, 0, 0, smaller.width, smaller.height);
+}
+
+
+// When the mouse is dragged, draw onto the user pixels
+function mouseDragged() {
+  // Only if the user drags within the user pixels area
+  if (mouseX > ux && mouseY > uy && mouseX < ux + uw && mouseY < uy + uw) {
+    // Draw a white circle
+    userPixels.fill(255);
+    userPixels.stroke(255);
+    userPixels.ellipse(mouseX - ux, mouseY - uy, 16, 16);
+    // Sample down into the smaller p5.Image object
+    var img = userPixels.get();
+    smaller.copy(img, 0, 0, uw, uw, 0, 0, smaller.width, smaller.height);
+  }
 }
 
 
 function draw() {
   background(200);
 
-
   // Train (this does just one image per cycle through draw)
   var traindata = train();
+
   // Test
   var result = test();
+  // The results come back as an array of 3 things
+  // Input data
   var testdata = result[0];
+  // What was the guess?
   var guess = result[1];
+  // Was it correct?
   var correct = result[2];
 
   // Draw the training and testing image
-  var colx = 180;
   drawImage(traindata, ux, 16, 2, 'training');
   drawImage(testdata, 180, 16, 2, 'test');
 
@@ -146,26 +162,31 @@ function draw() {
   // Show performance and # of epochs
   var status = 'performance: ' + nf(totalCorrect / totalGuesses, 0, 2);
   status += '<br>';
+  // Percent correct since the sketch began
   var percent = 100 * trainingIndex / training.length;
   status += 'epochs: ' + epochs + ' (' + nf(percent, 1, 2) + '%)';
   statusP.html(status);
 
 
-  // User entered stuff:
-
+  // Draw the user pixels
   image(userPixels, ux, uy);
   fill(0);
   textSize(12);
   text('draw here', ux, uy + uw + 16);
+  // Draw the sampled down image
   image(smaller, 180, uy, 28 * 2, 28 * 2);
 
-  // Change the pixels from the user into something
+  // Change the pixels from the user into network inputs
   var inputs = [];
   smaller.loadPixels();
   for (var i = 0; i < smaller.pixels.length; i += 4) {
+    // Just using the red channel since it's a greyscale image
+    // Not so great to use inputs of 0 so smallest value is 0.01
     inputs[i / 4] = map(smaller.pixels[i], 0, 255, 0, 0.99) + 0.01;
   }
+  // Get the outputs
   var outputs = nn.query(inputs);
+  // What is the best guess?
   var guess = findMax(outputs);
 
   // Draw the resulting guess
@@ -174,35 +195,7 @@ function draw() {
   fill(255);
   textSize(60);
   text(guess, 258, uy + 48);
-
-
 }
-
-
-// Draw the array of floats as an image
-function drawImage(values, xoff, yoff, w, txt) {
-  // it's a 28 x 28 image
-  var dim = 28;
-
-  // For every value
-  for (var k = 0; k < values.length; k++) {
-    // Scale up to 256
-    var brightness = values[k] * 256;
-    // Find x and y
-    var x = k % dim;
-    var y = floor(k / dim);
-    // Draw rectangle
-    fill(brightness);
-    noStroke();
-    rect(xoff + x * w, yoff + y * w, w, w);
-  }
-
-  // Draw a label below
-  fill(0);
-  textSize(12);
-  text(txt, xoff, yoff + w * 35);
-}
-
 
 // Function to train the network
 function train() {
@@ -215,6 +208,7 @@ function train() {
 
   // Starts at index 1
   for (var i = 1; i < values.length; i++) {
+    // Normalize the inputs 0-1, not so great to use inputs of 0 so add 0.01
     inputs[i - 1] = map(Number(values[i]), 0, 255, 0, 0.99) + 0.01;
   }
 
@@ -258,6 +252,7 @@ function test() {
 
   // Starts at index 1
   for (var i = 1; i < values.length; i++) {
+    // Normalize the inputs 0-1, not so great to use inputs of 0 so add 0.01
     inputs[i - 1] = map(Number(values[i]), 0, 255, 0, 0.99) + 0.01;
   }
 
@@ -305,4 +300,28 @@ function findMax(list) {
   }
   // Return index of highest
   return index;
+}
+
+// Draw the array of floats as an image
+function drawImage(values, xoff, yoff, w, txt) {
+  // it's a 28 x 28 image
+  var dim = 28;
+
+  // For every value
+  for (var k = 0; k < values.length; k++) {
+    // Scale up to 256
+    var brightness = values[k] * 256;
+    // Find x and y
+    var x = k % dim;
+    var y = floor(k / dim);
+    // Draw rectangle
+    fill(brightness);
+    noStroke();
+    rect(xoff + x * w, yoff + y * w, w, w);
+  }
+
+  // Draw a label below
+  fill(0);
+  textSize(12);
+  text(txt, xoff, yoff + w * 35);
 }
