@@ -39,8 +39,8 @@ var statusP;
 // Note this is not the full dataset
 // From: https://pjreddie.com/projects/mnist-in-csv/
 function preload() {
-  training = loadStrings('data/mnist_train.csv');
-  testing = loadStrings('data/mnist_test_100.csv');
+  training = loadStrings('data/mnist_train_10000.csv');
+  testing = loadStrings('data/mnist_test_1000.csv');
 }
 
 function setup() {
