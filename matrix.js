@@ -8,6 +8,15 @@
 // This is my own ridiculous Matrix implemenation
 // Would probably make more sense to use math.js or something else!
 
+// Get random gaussian value
+function randomNormal() {
+  var sum = 0;
+  for (var i = 0; i < 6; i++) {
+    sum += random();
+  }
+  return (sum - 3) / 3
+}
+
 // Make a matrix full of zeros
 function Matrix(rows, cols) {
   this.rows = rows;
@@ -25,7 +34,7 @@ function Matrix(rows, cols) {
 Matrix.prototype.randomize = function() {
   for (var i = 0; i < this.rows; i++) {
     for (var j = 0; j < this.cols; j++) {
-      this.matrix[i][j] = randomGaussian();
+      this.matrix[i][j] = randomNormal();
     }
   }
 }
