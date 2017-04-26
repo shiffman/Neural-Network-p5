@@ -14,6 +14,8 @@ The code is based on the book [Make Your Own Neural Network](http://amzn.to/2oRW
 * [NeuroEvolution and Flappy Bird](https://shiffman.github.io/Neural-Network-p5/examples/neuro-evolution/flappy/)
 * [NeuroEvolution and Steering](https://shiffman.github.io/Neural-Network-p5/examples/neuro-evolution/steering/)
 
+The neuro-evolution examples are inspired by the [chrome experiment Flappy Learning](https://www.chromeexperiments.com/experiment/flappylearning) by [xviniette](http://github.com/xviniette).
+
 ## Use
 
 ```javascript
