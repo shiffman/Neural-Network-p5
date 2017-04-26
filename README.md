@@ -4,7 +4,7 @@ This repository is a library for creating simple vanilla 3-layer ANNs in JavaScr
 
 At the moment this library is depends on [p5.js](http://p5js.org). However, it's my intention to remove this dependency for the library itself (while still making examples using p5): #10. I also intend to port this library to Java for [Processing](http://processing.org): #11.
 
-Finally, this library has a terribly inefficient matrix implementation and should likely use
+Finally, this library has a terribly inefficient matrix implementation and should likely include options for using [math.js](http://mathjs.org/) and/or [gpu.js](http://gpu.rocks/).
 
 The code is based on the book [Make Your Own Neural Network](http://amzn.to/2oRW1ax) by Tariq Rashid ([book source code](https://github.com/makeyourownneuralnetwork)).
 
