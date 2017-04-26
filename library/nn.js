@@ -21,6 +21,11 @@ function tanh(x) {
   return y;
 }
 
+function dtanhx(x) {
+  var y = 1 / (pow(Math.cosh(x), 2));
+  return y;
+}
+
 // This is the Sigmoid derivative!
 function dSigmoid(x) {
   return x * (1 - x);
@@ -39,7 +44,16 @@ function mutate(x) {
 }
 
 // Neural Network constructor function
-function NeuralNetwork(inputnodes, hiddennodes, outputnodes) {
+function NeuralNetwork(inputnodes, hiddennodes, outputnodes, activation) {
+
+  if (activation == 'tanh') {
+    this.activation = tanh;
+    this.derivative = dtanh;
+  } else {
+    this.activation = sigmoid;
+    this.derivative = dSigmoid;
+  }
+
 
   // If it's a copy of another NN
   if (arguments[0] instanceof NeuralNetwork) {
@@ -49,6 +63,8 @@ function NeuralNetwork(inputnodes, hiddennodes, outputnodes) {
     this.onodes = nn.onodes;
     this.wih = nn.wih.copy();
     this.who = nn.who.copy();
+    this.activation = nn.activation;
+    this.derative = nn.derivative;
   } else {
     // Number of nodes in layer (input, hidden, output)
     // This network is limited to 3 layers
@@ -142,13 +158,13 @@ NeuralNetwork.prototype.query = function(inputs_array) {
   // The input to the hidden layer is the weights (wih) multiplied by inputs
   var hidden_inputs = Matrix.dot(this.wih, inputs);
   // The outputs of the hidden layer pass through sigmoid activation function
-  var hidden_outputs = Matrix.map(hidden_inputs, tanh);
+  var hidden_outputs = Matrix.map(hidden_inputs, activation);
 
   // The input to the output layer is the weights (who) multiplied by hidden layer
   var output_inputs = Matrix.dot(this.who, hidden_outputs);
 
   // The output of the network passes through sigmoid activation function
-  var outputs = Matrix.map(output_inputs, tanh);
+  var outputs = Matrix.map(output_inputs, activation);
 
   // Return the result as an array
   return outputs.toArray();

@@ -41,7 +41,7 @@ function Vehicle(x, y, brain) {
   } else {
     //var inputs = this.sensors.length*2;
     var inputs = this.sensors.length;
-    this.brain = new NeuralNetwork(inputs, 32, 2);
+    this.brain = new NeuralNetwork(inputs, 32, 2, 'tanh');
   }
 
   // Health
