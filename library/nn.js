@@ -5,6 +5,9 @@
 // Based on "Make Your Own Neural Network" by Tariq Rashid
 // https://github.com/makeyourownneuralnetwork/
 
+// This version of nn.js adds some functionality for evolution
+// copy() and mutate()
+
 // Sigmoid function
 // This is used for activation
 // https://en.wikipedia.org/wiki/Sigmoid_function
@@ -13,35 +16,69 @@ function sigmoid(x) {
   return y;
 }
 
+function tanh(x) {
+  var y = Math.tanh(x);
+  return y;
+}
+
 // This is the Sigmoid derivative!
 function dSigmoid(x) {
   return x * (1 - x);
 }
 
+// This is how we adjust weights ever so slightly
+function mutate(x) {
+  if (random(1) < 0.1) {
+    var offset = randomGaussian() * 0.5;
+    //var offset = random(-0.1, 0.1);
+    var newx = x + offset;
+    return newx;
+  } else {
+    return x;
+  }
+}
+
 // Neural Network constructor function
-function NeuralNetwork(inputnodes, hiddennodes, outputnodes, learningrate) {
+function NeuralNetwork(inputnodes, hiddennodes, outputnodes) {
 
-  // Number of nodes in layer (input, hidden, output)
-  // This network is limited to 3 layers
-  this.inodes = inputnodes;
-  this.hnodes = hiddennodes;
-  this.onodes = outputnodes;
+  // If it's a copy of another NN
+  if (arguments[0] instanceof NeuralNetwork) {
+    var nn = arguments[0];
+    this.inodes = nn.inodes;
+    this.hnodes = nn.hnodes;
+    this.onodes = nn.onodes;
+    this.wih = nn.wih.copy();
+    this.who = nn.who.copy();
+  } else {
+    // Number of nodes in layer (input, hidden, output)
+    // This network is limited to 3 layers
+    this.inodes = inputnodes;
+    this.hnodes = hiddennodes;
+    this.onodes = outputnodes;
 
-  // These are the weight matrices
-  // wih: weights from input to hidden
-  // who: weights from hidden to output
-  // weights inside the arrays are w_i_j
-  // where link is from node i to node j in the next layer
-  // Matrix is rows X columns
-  this.wih = new Matrix(this.hnodes, this.inodes);
-  this.who = new Matrix(this.onodes, this.hnodes);
+    // These are the weight matrices
+    // wih: weights from input to hidden
+    // who: weights from hidden to output
+    // weights inside the arrays are w_i_j
+    // where link is from node i to node j in the next layer
+    // Matrix is rows X columns
+    this.wih = new Matrix(this.hnodes, this.inodes);
+    this.who = new Matrix(this.onodes, this.hnodes);
 
-  // Start with random values
-  this.wih.randomize();
-  this.who.randomize();
+    // Start with random values
+    this.wih.randomize();
+    this.who.randomize();
+  }
 
-  // Learning rate
-  this.lr = learningrate;
+}
+
+NeuralNetwork.prototype.copy = function() {
+  return new NeuralNetwork(this);
+}
+
+NeuralNetwork.prototype.mutate = function() {
+  this.wih = Matrix.map(this.wih, mutate);
+  this.who = Matrix.map(this.who, mutate);
 }
 
 // Train the network with inputs and targets
@@ -105,13 +142,13 @@ NeuralNetwork.prototype.query = function(inputs_array) {
   // The input to the hidden layer is the weights (wih) multiplied by inputs
   var hidden_inputs = Matrix.dot(this.wih, inputs);
   // The outputs of the hidden layer pass through sigmoid activation function
-  var hidden_outputs = Matrix.map(hidden_inputs, sigmoid);
+  var hidden_outputs = Matrix.map(hidden_inputs, tanh);
 
   // The input to the output layer is the weights (who) multiplied by hidden layer
   var output_inputs = Matrix.dot(this.who, hidden_outputs);
 
   // The output of the network passes through sigmoid activation function
-  var outputs = Matrix.map(output_inputs, sigmoid);
+  var outputs = Matrix.map(output_inputs, tanh);
 
   // Return the result as an array
   return outputs.toArray();
