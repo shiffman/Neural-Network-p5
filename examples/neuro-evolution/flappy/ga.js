@@ -1,45 +1,63 @@
+// Daniel Shiffman
+// Nature of Code: Intelligence and Learning
+// https://github.com/shiffman/NOC-S17-2-Intelligence-Learning
 
+// This flappy bird implementation is adapted from:
+// https://youtu.be/cXgA1d_E-jY&
+
+
+// This file includes functions for creating a new generation
+// of birds.
+
+// Start the game over
 function resetGame() {
   counter = 0;
   pipes = [];
 }
 
+// Create the next generation
 function nextGeneration() {
   resetGame();
+  // Normalize the fitness values 0-1
   normalizeFitness(allBirds);
+  // Generate a new set of birds
   activeBirds = generate(allBirds);
+  // Copy those birds to another array
   allBirds = activeBirds.slice();
 }
 
+// Generate a new population of birds
 function generate(oldBirds) {
   var newBirds = [];
-
   for (var i = 0; i < oldBirds.length; i++) {
+    // Select a bird based on fitness
     var bird = poolSelection(oldBirds);
     newBirds[i] = bird;
   }
   return newBirds;
 }
 
-
+// Normalize the fitness of all birds
 function normalizeFitness(birds) {
-  // make score exponentially better?
+  // Make score exponentially better?
   for (var i = 0; i < birds.length; i++) {
     birds[i].score = pow(birds[i].score, 2);
   }
+
+  // Add up all the scores
   var sum = 0;
   for (var i = 0; i < birds.length; i++) {
     sum += birds[i].score;
   }
-  var check = 0;
+  // Divide by the sum
   for (var i = 0; i < birds.length; i++) {
     birds[i].fitness = birds[i].score / sum;
-    check += birds[i].fitness;
   }
 }
 
 
-
+// An algorithm for picking one bird from an array
+// based on fitness
 function poolSelection(birds) {
   // Start at 0
   var index = 0;
@@ -59,5 +77,7 @@ function poolSelection(birds) {
   // Go back one
   index -= 1;
 
+  // Make sure it's a copy!
+  // (this includes mutation)
   return birds[index].copy();
 }
