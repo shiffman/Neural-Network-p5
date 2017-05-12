@@ -44,8 +44,8 @@ function mutate(x) {
 }
 
 // Neural Network constructor function
-function NeuralNetwork(inputnodes, hiddennodes, outputnodes, activation) {
-
+function NeuralNetwork(inputnodes, hiddennodes, outputnodes, learningRate) {
+  var activation = "";
   if (activation == 'tanh') {
     this.activation = NeuralNetwork.tanh;
     this.derivative = NeuralNetwork.dtanh;
@@ -54,7 +54,7 @@ function NeuralNetwork(inputnodes, hiddennodes, outputnodes, activation) {
     this.derivative = NeuralNetwork.dSigmoid;
   }
 
-
+  this.lr = learningRate;
   // If it's a copy of another NN
   if (arguments[0] instanceof NeuralNetwork) {
     var nn = arguments[0];
