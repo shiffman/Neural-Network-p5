@@ -44,16 +44,7 @@ function mutate(x) {
 }
 
 // Neural Network constructor function
-function NeuralNetwork(inputnodes, hiddennodes, outputnodes, activation) {
-
-  if (activation == 'tanh') {
-    this.activation = NeuralNetwork.tanh;
-    this.derivative = NeuralNetwork.dtanh;
-  } else {
-    this.activation = NeuralNetwork.sigmoid;
-    this.derivative = NeuralNetwork.dSigmoid;
-  }
-
+function NeuralNetwork(inputnodes, hiddennodes, outputnodes, learning_rate, activation) {
 
   // If it's a copy of another NN
   if (arguments[0] instanceof NeuralNetwork) {
@@ -64,7 +55,8 @@ function NeuralNetwork(inputnodes, hiddennodes, outputnodes, activation) {
     this.wih = nn.wih.copy();
     this.who = nn.who.copy();
     this.activation = nn.activation;
-    this.derative = nn.derivative;
+    this.derivative = nn.derivative;
+    this.lr = this.lr;
   } else {
     // Number of nodes in layer (input, hidden, output)
     // This network is limited to 3 layers
@@ -84,6 +76,19 @@ function NeuralNetwork(inputnodes, hiddennodes, outputnodes, activation) {
     // Start with random values
     this.wih.randomize();
     this.who.randomize();
+
+    // Default learning rate of 0.1
+    this.lr = learning_rate || 0.1;
+
+    // Activation Function
+    if (activation == 'tanh') {
+      this.activation = NeuralNetwork.tanh;
+      this.derivative = NeuralNetwork.dtanh;
+    } else {
+      this.activation = NeuralNetwork.sigmoid;
+      this.derivative = NeuralNetwork.dSigmoid;
+    }
+
   }
 
 }
