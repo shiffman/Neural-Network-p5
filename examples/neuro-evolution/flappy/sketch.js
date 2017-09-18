@@ -30,141 +30,141 @@ var runBest = false;
 var runBestButton;
 
 function setup() {
-  var canvas = createCanvas(600, 400);
-  canvas.parent('canvascontainer');
+	var canvas = createCanvas(600, 400);
+	canvas.parent('canvascontainer');
 
-  // Access the interface elements
-  speedSlider = select('#speedSlider');
-  speedSpan = select('#speed');
-  highScoreSpan = select('#hs');
-  allTimeHighScoreSpan = select('#ahs');
-  runBestButton = select('#best');
-  runBestButton.mousePressed(toggleState);
+	// Access the interface elements
+	speedSlider = select('#speedSlider');
+	speedSpan = select('#speed');
+	highScoreSpan = select('#hs');
+	allTimeHighScoreSpan = select('#ahs');
+	runBestButton = select('#best');
+	runBestButton.mousePressed(toggleState);
 
-  // Create a population
-  for (var i = 0; i < totalPopulation; i++) {
-    var bird = new Bird();
-    activeBirds[i] = bird;
-    allBirds[i] = bird;
-  }
+	// Create a population
+	for (var i = 0; i < totalPopulation; i++) {
+		var bird = new Bird();
+		activeBirds[i] = bird;
+		allBirds[i] = bird;
+	}
 }
 
 // Toggle the state of the simulation
 function toggleState() {
-  runBest = !runBest;
-  // Show the best bird
-  if (runBest) {
-    resetGame();
-    bestBird.score = 0;
-    runBestButton.html('continue training');
-    // Go train some more
-  } else {
-    nextGeneration();
-    runBestButton.html('run best');
-  }
+	runBest = !runBest;
+	// Show the best bird
+	if (runBest) {
+		resetGame();
+		bestBird.score = 0;
+		runBestButton.html('continue training');
+		// Go train some more
+	} else {
+		nextGeneration();
+		runBestButton.html('run best');
+	}
 }
 
 
 
 function draw() {
-  background(0);
+	background(0);
 
-  // Should we speed up cycles per frame
-  var cycles = speedSlider.value();
-  speedSpan.html(cycles);
+	// Should we speed up cycles per frame
+	var cycles = speedSlider.value();
+	speedSpan.html(cycles);
 
 
-  // How many times to advance the game
-  for (var n = 0; n < cycles; n++) {
-    // Show all the pipes
-    for (var i = pipes.length - 1; i >= 0; i--) {
-      pipes[i].update();
-      if (pipes[i].offscreen()) {
-        pipes.splice(i, 1);
-      }
-    }
-    // Are we just running the best bird
-    if (runBest) {
-      bestBird.think(pipes);
-      bestBird.update();
-      for (var j = 0; j < pipes.length; j++) {
-        // Start over, bird hit pipe
-        if (pipes[j].hits(bestBird)) {
-          resetGame();
-          break;
-        }
-      }
-    // Or are we running all the active birds
-    } else {
-      for (var i = activeBirds.length - 1; i >= 0; i--) {
-        var bird = activeBirds[i];
-        // Bird uses its brain!
-        bird.think(pipes);
-        bird.update();
-        // Check all the pipes
-        for (var j = 0; j < pipes.length; j++) {
-          // It's hit a pipe
-          if (pipes[j].hits(activeBirds[i])) {
-            // Remove this bird
-            activeBirds.splice(i, 1);
-            break;
-          }
-        }
-      }
-    }
+	// How many times to advance the game
+	for (var n = 0; n < cycles; n++) {
+		// Show all the pipes
+		for (var i = pipes.length - 1; i >= 0; i--) {
+			pipes[i].update();
+			if (pipes[i].offscreen()) {
+				pipes.splice(i, 1);
+			}
+		}
+		// Are we just running the best bird
+		if (runBest) {
+			bestBird.think(pipes);
+			bestBird.update();
+			for (var j = 0; j < pipes.length; j++) {
+				// Start over, bird hit pipe
+				if (pipes[j].hits(bestBird)) {
+					resetGame();
+					break;
+				}
+			}
+			// Or are we running all the active birds
+		} else {
+			for (var i = activeBirds.length - 1; i >= 0; i--) {
+				var bird = activeBirds[i];
+				// Bird uses its brain!
+				bird.think(pipes);
+				bird.update();
+				// Check all the pipes
+				for (var j = 0; j < pipes.length; j++) {
+					// It's hit a pipe
+					if (pipes[j].hits(activeBirds[i])) {
+						// Remove this bird
+						activeBirds.splice(i, 1);
+						break;
+					}
+				}
+			}
+		}
 
-    // Add a new pipe every so often
-    if (counter % 75 == 0) {
-      pipes.push(new Pipe());
-    }
-    counter++;
-  }
+		// Add a new pipe every so often
+		if (counter % 75 == 0) {
+			pipes.push(new Pipe());
+		}
+		counter++;
+	}
 
-  // What is highest score of the current population
-  var tempHighScore = 0;
-  // If we're training
-  if (!runBest) {
-    // Which is the best bird?
-    var tempBestBird = null;
-    for (var i = 0; i < activeBirds.length; i++) {
-      var s = activeBirds[i].score;
-      if (s > tempHighScore) {
-        tempHighScore = s;
-        tempBestBird = activeBirds[i];
-      }
-    }
+	// What is highest score of the current population
+	var tempHighScore = 0;
+	// If we're training
+	if (!runBest) {
+		// Which is the best bird?
+		var tempBestBird = null;
+		for (var i = 0; i < activeBirds.length; i++) {
+			var s = activeBirds[i].score;
+			if (s > tempHighScore) {
+				tempHighScore = s;
+				tempBestBird = activeBirds[i];
+			}
+		}
 
-    // Is it the all time high scorer?
-    if (tempHighScore > highScore) {
-      highScore = tempHighScore;
-      bestBird = tempBestBird;
-    }
-  } else {
-    // Just one bird, the best one so far
-    tempHighScore = bestBird.score;
-    if (tempHighScore > highScore) {
-      highScore = tempHighScore;
-    }
-  }
+		// Is it the all time high scorer?
+		if (tempHighScore > highScore) {
+			highScore = tempHighScore;
+			bestBird = tempBestBird;
+		}
+	} else {
+		// Just one bird, the best one so far
+		tempHighScore = bestBird.score;
+		if (tempHighScore > highScore) {
+			highScore = tempHighScore;
+		}
+	}
 
-  // Update DOM Elements
-  highScoreSpan.html(tempHighScore);
-  allTimeHighScoreSpan.html(highScore);
+	// Update DOM Elements
+	highScoreSpan.html(tempHighScore);
+	allTimeHighScoreSpan.html(highScore);
 
-  // Draw everything!
-  for (var i = 0; i < pipes.length; i++) {
-    pipes[i].show();
-  }
+	// Draw everything!
+	for (var i = 0; i < pipes.length; i++) {
+		pipes[i].show();
+	}
 
-  if (runBest) {
-    bestBird.show();
-  } else {
-    for (var i = 0; i < activeBirds.length; i++) {
-      activeBirds[i].show();
-    }
-    // If we're out of birds go to the next generation
-    if (activeBirds.length == 0) {
-      nextGeneration();
-    }
-  }
+	if (runBest) {
+		bestBird.show();
+	} else {
+		for (var i = 0; i < activeBirds.length; i++) {
+			activeBirds[i].show();
+		}
+		// If we're out of birds go to the next generation
+		if (activeBirds.length == 0) {
+			nextGeneration();
+		}
+	}
 }
