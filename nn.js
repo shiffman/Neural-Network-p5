@@ -85,6 +85,7 @@ function NeuralNetwork(inputnodes, hiddennodes, outputnodes, learning_rate, acti
 		this.derivative = nn.derivative;
 		this.lr = this.lr;
 	} else {
+
 		// Number of nodes in layer (input, hidden, output)
 		// This network is limited to 3 layers
 		this.inodes = inputnodes;
@@ -115,9 +116,7 @@ function NeuralNetwork(inputnodes, hiddennodes, outputnodes, learning_rate, acti
 			this.activation = NeuralNetwork.sigmoid;
 			this.derivative = NeuralNetwork.dSigmoid;
 		}
-
 	}
-
 }
 
 /**
@@ -145,6 +144,7 @@ NeuralNetwork.prototype.train = function (inputs_array, targets_array) {
 
 	// The input to the hidden layer is the weights (wih) multiplied by inputs
 	var hidden_inputs = Matrix.dot(this.wih, inputs);
+
 	// The outputs of the hidden layer pass through sigmoid activation function
 	var hidden_outputs = Matrix.map(hidden_inputs, this.activation);
 
@@ -161,17 +161,20 @@ NeuralNetwork.prototype.train = function (inputs_array, targets_array) {
 
 	// Transpose hidden <-> output weights
 	var whoT = this.who.transpose();
+
 	// Hidden errors is output error multiplied by weights (who)
 	var hidden_errors = Matrix.dot(whoT, output_errors)
 
 	// Calculate the gradient, this is much nicer in python!
 	var gradient_output = Matrix.map(outputs, this.derivative);
+
 	// Weight by errors and learing rate
 	gradient_output.multiply(output_errors);
 	gradient_output.multiply(this.lr);
 
 	// Gradients for next layer, more back propogation!
 	var gradient_hidden = Matrix.map(hidden_outputs, this.derivative);
+
 	// Weight by errors and learning rate
 	gradient_hidden.multiply(hidden_errors);
 	gradient_hidden.multiply(this.lr);
@@ -199,6 +202,7 @@ NeuralNetwork.prototype.query = function (inputs_array) {
 
 	// The input to the hidden layer is the weights (wih) multiplied by inputs
 	var hidden_inputs = Matrix.dot(this.wih, inputs);
+
 	// The outputs of the hidden layer pass through sigmoid activation function
 	var hidden_outputs = Matrix.map(hidden_inputs, this.activation);
 
