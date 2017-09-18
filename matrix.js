@@ -8,7 +8,12 @@
 // This is my own ridiculous Matrix implemenation
 // Would probably make more sense to use math.js or something else!
 
-// Make a matrix full of zeros
+/**
+ * Make a matrix full of zeros
+ * @param {Number} rows 
+ * @param {Number} cols 
+ * @return {Matrix}
+ */
 function Matrix(rows, cols) {
   this.rows = rows;
   this.cols = cols;
@@ -21,7 +26,9 @@ function Matrix(rows, cols) {
   }
 }
 
-// This fills the matrix with random values (gaussian distribution)
+/**
+ * This fills the matrix with random values (gaussian distribution)
+ */
 Matrix.prototype.randomize = function() {
   for (var i = 0; i < this.rows; i++) {
     for (var j = 0; j < this.cols; j++) {
@@ -31,7 +38,10 @@ Matrix.prototype.randomize = function() {
   }
 }
 
-// Take the matrix and make it a 1 dimensional array
+/**
+ * Take the matrix and make it a 1 dimensional array
+ * @return {Array}
+ */
 Matrix.prototype.toArray = function() {
   // Add all the values to the array
   var arr = [];
@@ -43,9 +53,11 @@ Matrix.prototype.toArray = function() {
   return arr;
 }
 
-
-// This transposes a matrix
-// rows X cols --> cols X rows
+/**
+ * This transposes a matrix
+ * rows X cols --> cols X rows
+ * @return {Matrix}
+ */
 Matrix.prototype.transpose = function() {
   var result = new Matrix(this.cols, this.rows);
   for (var i = 0; i < result.rows; i++) {
@@ -56,7 +68,10 @@ Matrix.prototype.transpose = function() {
   return result;
 }
 
-// This makes a copy of the matrix
+/**
+ * This makes a copy of the matrix
+ * @return {Matrix}
+ */
 Matrix.prototype.copy = function() {
   var result = new Matrix(this.rows, this.cols);
   for (var i = 0; i < result.rows; i++) {
@@ -67,7 +82,10 @@ Matrix.prototype.copy = function() {
   return result;
 }
 
-// This adds another matrix or a single value
+/**
+ * This adds another matrix or a single value
+ * @param {Matrix} other
+ */
 Matrix.prototype.add = function(other) {
   // Are we trying to add a Matrix?
   if (other instanceof Matrix) {
@@ -86,8 +104,11 @@ Matrix.prototype.add = function(other) {
   }
 }
 
-// This multiplies another matrix or a single value
-// This is different than the dot() function!
+/**
+ * This multiplies another matrix or a single value
+ * This is different than the dot() function!
+ * @param {Matrix} other
+ */
 Matrix.prototype.multiply = function(other) {
   // Are we trying to multiply a Matrix?
   if (other instanceof Matrix) {
@@ -106,11 +127,12 @@ Matrix.prototype.multiply = function(other) {
   }
 }
 
-
-// These are some static functions to operate on a matrix
-
-// This is the trickiest one
-// Takes a function and applies it to all values in the matrix
+/**
+ * This is the trickiest one
+ * Takes a function and applies it to all values in the matrix
+ * @param {Matrix} m
+ * @param {Function} fn
+ */
 Matrix.map = function(m, fn) {
   var result = new Matrix(m.rows, m.cols);
   for (var i = 0; i < result.rows; i++) {
@@ -121,7 +143,12 @@ Matrix.map = function(m, fn) {
   return result;
 }
 
-// Subtracts one matrix from another
+/**
+ * Subtracts one matrix from another
+ * @param {Matrix} a
+ * @param {Matrix} b
+ * @return {Matrix}
+ */
 Matrix.subtract = function(a, b) {
   var result = new Matrix(a.rows, a.cols);
   for (var i = 0; i < result.rows; i++) {
@@ -132,8 +159,12 @@ Matrix.subtract = function(a, b) {
   return result;
 }
 
-
-// Multiplies two matrices together
+/**
+ * Multiplies two matrices together
+ * @param {Matrix} a
+ * @param {Matrix} b
+ * @return {Matrix}
+ */
 Matrix.dot = function(a, b) {
   // Won't work if columns of A don't equal columns of B
   if (a.cols != b.rows) {
@@ -156,8 +187,11 @@ Matrix.dot = function(a, b) {
   return result;
 }
 
-
-// Turn a 1 dimensional array into a matrix
+/**
+ * Turn a 1 dimensional array into a matrix
+ * @param {Array}
+ * @return {Matrix}
+ */
 Matrix.fromArray = function(array) {
   var m = new Matrix(array.length, 1);
   for (var i = 0; i < array.length; i++) {
