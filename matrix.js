@@ -27,13 +27,23 @@ function Matrix(rows, cols) {
 }
 
 /**
+ * Returns a random number between min and max
+ * @param {Number} min 
+ * @param {Number} max 
+ * @return {Number}
+ */
+function random(min, max) {
+	return Math.random() * (max - min) + min
+}
+
+/**
  * This fills the matrix with random values (gaussian distribution)
  */
 Matrix.prototype.randomize = function () {
 	for (var i = 0; i < this.rows; i++) {
 		for (var j = 0; j < this.cols; j++) {
-			this.matrix[i][j] = randomGaussian();
-			//this.matrix[i][j] = random(-1, 1);
+			// this.matrix[i][j] = randomGaussian();
+			this.matrix[i][j] = random(-1, 1);
 		}
 	}
 }
