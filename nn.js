@@ -120,9 +120,7 @@ function NeuralNetwork(inputnodes, hiddennodes, outputnodes, learning_rate, acti
       this.activation = NeuralNetwork.sigmoid;
       this.derivative = NeuralNetwork.dSigmoid;
     }
-
   }
-
 }
 
 NeuralNetwork.prototype.copy = function () {
@@ -197,6 +195,7 @@ NeuralNetwork.prototype.train = function (inputs_array, targets_array) {
 /**
  * Query the network!
  * @param {Array} inputs_array
+ * @return {Array}
  */
 NeuralNetwork.prototype.query = function (inputs_array) {
 
