@@ -191,7 +191,6 @@ NeuralNetwork.prototype.train = function (inputs_array, targets_array) {
 	this.wih.add(deltaW_hidden);
 }
 
-
 /**
  * Query the network!
  * @param {Array} inputs_array
