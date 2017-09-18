@@ -43,6 +43,7 @@ Matrix.prototype.randomize = function () {
  * @return {Array}
  */
 Matrix.prototype.toArray = function () {
+
 	// Add all the values to the array
 	var arr = [];
 	for (var i = 0; i < this.rows; i++) {
@@ -87,15 +88,17 @@ Matrix.prototype.copy = function () {
  * @param {Matrix} other
  */
 Matrix.prototype.add = function (other) {
-	// Are we trying to add a Matrix?
 	if (other instanceof Matrix) {
+
+		// Are we trying to add a Matrix?
 		for (var i = 0; i < this.rows; i++) {
 			for (var j = 0; j < this.cols; j++) {
 				this.matrix[i][j] += other.matrix[i][j];
 			}
 		}
-		// Or just a single scalar value?
 	} else {
+
+		// Or just a single scalar value?
 		for (var i = 0; i < this.rows; i++) {
 			for (var j = 0; j < this.cols; j++) {
 				this.matrix[i][j] += other;
@@ -110,15 +113,17 @@ Matrix.prototype.add = function (other) {
  * @param {Matrix} other
  */
 Matrix.prototype.multiply = function (other) {
-	// Are we trying to multiply a Matrix?
 	if (other instanceof Matrix) {
+
+		// Are we trying to multiply a Matrix?
 		for (var i = 0; i < this.rows; i++) {
 			for (var j = 0; j < this.cols; j++) {
 				this.matrix[i][j] *= other.matrix[i][j];
 			}
 		}
-		// Or just a single scalar value?
 	} else {
+
+		// Or just a single scalar value?
 		for (var i = 0; i < this.rows; i++) {
 			for (var j = 0; j < this.cols; j++) {
 				this.matrix[i][j] *= other;
@@ -166,20 +171,24 @@ Matrix.subtract = function (a, b) {
  * @return {Matrix}
  */
 Matrix.dot = function (a, b) {
+
 	// Won't work if columns of A don't equal columns of B
 	if (a.cols != b.rows) {
 		console.log("Incompatible matrix sizes!");
 		return;
 	}
+
 	// Make a new matrix
 	var result = new Matrix(a.rows, b.cols);
 	for (var i = 0; i < a.rows; i++) {
 		for (var j = 0; j < b.cols; j++) {
+
 			// Sum all the rows of A times columns of B
 			var sum = 0;
 			for (var k = 0; k < a.cols; k++) {
 				sum += a.matrix[i][k] * b.matrix[k][j];
 			}
+			
 			// New value
 			result.matrix[i][j] = sum;
 		}
