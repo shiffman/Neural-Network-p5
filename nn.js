@@ -12,7 +12,7 @@
 // This is used for activation
 // https://en.wikipedia.org/wiki/Sigmoid_function
 NeuralNetwork.sigmoid = function(x) {
-  var y = 1 / (1 + pow(Math.E, -x));
+  var y = 1 / (1 + Math.pow(Math.E, -x));
   return y;
 }
 
@@ -27,7 +27,7 @@ NeuralNetwork.tanh = function(x) {
 }
 
 NeuralNetwork.dtanh = function(x) {
-  var y = 1 / (pow(Math.cosh(x), 2));
+  var y = 1 / (Math.pow(Math.cosh(x), 2));
   return y;
 }
 
