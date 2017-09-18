@@ -8,30 +8,50 @@
 // This version of nn.js adds some functionality for evolution
 // copy() and mutate()
 
-// Sigmoid function
-// This is used for activation
-// https://en.wikipedia.org/wiki/Sigmoid_function
+/**
+ * Sigmoid function
+ * This is used for activation
+ * https://en.wikipedia.org/wiki/Sigmoid_function
+ * @param {Number} x
+ * @return {Number}
+ */
 NeuralNetwork.sigmoid = function(x) {
   var y = 1 / (1 + Math.pow(Math.E, -x));
   return y;
 }
 
-// This is the Sigmoid derivative!
+/**
+ * This is the Sigmoid derivative!
+ * @param {Number} x
+ * @return {Number}
+ */
 NeuralNetwork.dSigmoid = function(x) {
   return x * (1 - x);
 }
 
+/**
+ * @param {Number} x
+ * @return {Number}
+ */
 NeuralNetwork.tanh = function(x) {
   var y = Math.tanh(x);
   return y;
 }
 
+/**
+ * @param {Number} x
+ * @return {Number}
+ */
 NeuralNetwork.dtanh = function(x) {
   var y = 1 / (Math.pow(Math.cosh(x), 2));
   return y;
 }
 
-// This is how we adjust weights ever so slightly
+/**
+ * This is how we adjust weights ever so slightly
+ * @param {Number} x
+ * @return {Number}
+ */
 function mutate(x) {
   if (random(1) < 0.1) {
     var offset = randomGaussian() * 0.5;
@@ -43,7 +63,14 @@ function mutate(x) {
   }
 }
 
-// Neural Network constructor function
+/**
+ * Neural Network constructor function
+ * @param {Number} inputnodes 
+ * @param {Number} hiddennodes 
+ * @param {Number} outputnodes 
+ * @param {Number} learning_rate 
+ * @param {String} activation 
+ */
 function NeuralNetwork(inputnodes, hiddennodes, outputnodes, learning_rate, activation) {
 
   // If it's a copy of another NN
@@ -93,6 +120,9 @@ function NeuralNetwork(inputnodes, hiddennodes, outputnodes, learning_rate, acti
 
 }
 
+/**
+ * @return {NeuralNetwork}
+ */
 NeuralNetwork.prototype.copy = function() {
   return new NeuralNetwork(this);
 }
@@ -102,7 +132,11 @@ NeuralNetwork.prototype.mutate = function() {
   this.who = Matrix.map(this.who, mutate);
 }
 
-// Train the network with inputs and targets
+/**
+ * Train the network with inputs and targets
+ * @param {Array} inputs_array
+ * @param {Array} targets_array
+ */
 NeuralNetwork.prototype.train = function(inputs_array, targets_array) {
 
   // Turn input and target arrays into matrices
@@ -153,8 +187,11 @@ NeuralNetwork.prototype.train = function(inputs_array, targets_array) {
   this.wih.add(deltaW_hidden);
 }
 
-
-// Query the network!
+/**
+ * Query the network!
+ * @param {Array} inputs_array
+ * @return {Array}
+ */
 NeuralNetwork.prototype.query = function(inputs_array) {
 
   // Turn input array into a matrix
