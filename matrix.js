@@ -198,7 +198,7 @@ Matrix.dot = function (a, b) {
 			for (var k = 0; k < a.cols; k++) {
 				sum += a.matrix[i][k] * b.matrix[k][j];
 			}
-			
+
 			// New value
 			result.matrix[i][j] = sum;
 		}
