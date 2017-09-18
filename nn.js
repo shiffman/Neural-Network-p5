@@ -70,6 +70,7 @@ function mutate(x) {
  * @param {Number} outputnodes 
  * @param {Number} learning_rate 
  * @param {String} activation 
+ * @return {NeuralNetwork}
  */
 function NeuralNetwork(inputnodes, hiddennodes, outputnodes, learning_rate, activation) {
 
