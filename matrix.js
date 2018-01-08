@@ -165,3 +165,27 @@ Matrix.fromArray = function(array) {
   }
   return m;
 }
+
+// Visualize the matrix in the browser window
+Matrix.prototype.visualize = function() {
+  let table = document.createElement('table');
+  table.className = 'vis-matrix';
+  table.style.margin = '40px';
+  table.style.padding = '4px 10px';
+  table.style.borderLeft = '2px solid black';
+  table.style.borderRight = '2px solid black';
+  table.style.borderRadius = '20px';
+  this.matrix.forEach((el, i) => {
+    let row = document.createElement('tr');
+    el.forEach(el => {
+      let cell = document.createElement('td');
+      cell.innerHTML = el;
+      cell.style.padding = '3px 8px';
+      cell.style.textAlign = 'center';
+      cell.style.color = 'black';
+      row.appendChild(cell);
+    })
+    table.appendChild(row);
+  });
+  document.body.appendChild(table);
+}
