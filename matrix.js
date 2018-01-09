@@ -167,8 +167,27 @@ Matrix.fromArray = function(array) {
 }
 
 // Visualize the matrix in the browser window
-Matrix.prototype.visualize = function() {
-  let table = document.createElement('table');
+// if idSelector is passed, the matrix is displayed in the table with the given id
+Matrix.prototype.visualize = function(idSelector) {
+  let table;
+  if (idSelector) {
+    if (typeof idSelector !== 'string') {
+      console.error('Invalid argument type (expected string, received ' + typeof idSelector + ')');
+      return;
+    }
+    // select table by id, otherwise create new table if not exists
+    table = document.getElementById(idSelector);
+    if (table === null) {
+      table = document.createElement('table');
+      table.id = idSelector;
+      document.body.appendChild(table);
+    }
+    table.innerHTML = ''; // clear
+  } else {
+    // append table without id to body
+    table = document.createElement('table');
+    document.body.appendChild(table);
+  }
   table.className = 'vis-matrix';
   table.style.margin = '40px';
   table.style.padding = '4px 10px';
@@ -187,5 +206,4 @@ Matrix.prototype.visualize = function() {
     })
     table.appendChild(row);
   });
-  document.body.appendChild(table);
 }
