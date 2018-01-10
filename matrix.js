@@ -183,6 +183,7 @@ Matrix.prototype.visualize = function(idSelector) {
       document.body.appendChild(table);
     }
     table.innerHTML = ''; // clear
+    table.setAttribute('title', 'id: ' + idSelector);
   } else {
     // append table without id to body
     table = document.createElement('table');
@@ -194,11 +195,12 @@ Matrix.prototype.visualize = function(idSelector) {
   table.style.borderLeft = '2px solid black';
   table.style.borderRight = '2px solid black';
   table.style.borderRadius = '20px';
-  this.matrix.forEach((el, i) => {
+  this.matrix.forEach((el, iRow) => {
     let row = document.createElement('tr');
-    el.forEach(el => {
+    el.forEach((el, iCol) => {
       let cell = document.createElement('td');
       cell.innerHTML = el;
+      cell.setAttribute('title', '[' + iRow + ',' + iCol + ']');
       cell.style.padding = '3px 8px';
       cell.style.textAlign = 'center';
       cell.style.color = 'black';
