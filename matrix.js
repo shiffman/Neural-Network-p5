@@ -211,9 +211,9 @@ Matrix.prototype.visualize = function(idSelector) {
 }
 
 Matrix.prototype.pprint = function(){ //"pretty print" the matrix
-  let fstring = '['
+  let fstring = '[';
   for (let i=0;i<this.matrix.length;i++){
-    fstring +=  (i!=0?' ':'') + ` [${this.matrix[i].map(x=>' ' + x.toString() + ' ')}],\n`
+    fstring +=  (i!=0?' ':'') + ` [${this.matrix[i].map(x=>' ' + x.toString() + ' ')}],\n`;
   }
-  console.log(fstring.substring(0,fstring.length-2) + ' ]')
+  console.log(fstring.substring(0,fstring.length-2) + ' ]');
 }
