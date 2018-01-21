@@ -174,3 +174,121 @@ NeuralNetwork.prototype.query = function(inputs_array) {
   // Return the result as an array
   return outputs.toArray();
 }
+
+
+
+NeuralNetwork.prototype.visualize = function(){
+  let scriptSources = [...document.getElementsByTagName('script')].filter(script => script.getAttribute("src")).map((elem)=>elem.getAttribute("src"));
+  for (let scriptSource of scriptSources){
+    if (scriptSource.includes("p5")) this.p5source = scriptSource;
+  }
+
+
+  let confirm = document.createElement("button");
+  confirm.setAttribute("onclick", `viz();`);
+  confirm.style = `float:right;margin: -75px 50px 0 0;color:white;padding:20px;background-color:#ff77e3;border:none;cursor:pointer;font-size:15px;`;  
+  confirm.innerText = "Visualize Network";
+  document.body.appendChild(confirm);
+
+
+  let step = -75;
+  let id = setInterval(fadeIn, 2);
+  function fadeIn(){
+    if (step == 25){
+      clearInterval(id);
+    } else {
+      step++;
+      confirm.style.marginTop = step;
+    }
+  }
+
+
+}
+
+function viz(){
+  let w = window.open("", null, `height=${window.innerHeight/1.25}
+    ,width=${window.innerWidth/1.25},status=yes,toolbar=no,menubar=no,location=no`);
+  w.document.title = "Neural Network";
+
+  w.document.body.style.backgroundColor = '#f7f5d9';
+
+  let p5js_src = w.document.createElement("script");
+  p5js_src.src = String(window.location).replace(/\/[^\/]+?(\.[^\/]+)$/, `/${nn.p5source}`);
+  p5js_src.type = "text/javascript";
+  w.document.head.appendChild(p5js_src);
+
+  let p5js_script = w.document.createElement("script");
+  p5js_script.innerHTML = `
+  function Node(x,y,radius){
+    this.x = x;
+    this.y = y;
+    this.r = radius;
+  }
+
+  Node.prototype.show = function(){
+    ellipse(this.x, this.y, this.r);
+  }
+
+  function setup(){
+    let nodeData = [];
+
+    let ww = ${window.innerWidth/1.25};
+    let wh = ${window.innerHeight/1.25}
+
+    createCanvas(ww,wh);
+    background("#f7f5d9");
+    fill("#f28ee6");
+
+    let nodes = [${nn.inodes}, ${nn.hnodes}, ${nn.onodes}];
+    for (var i=0;i<nodes.length;i++) nodeData.push([]);
+    for (var i=0;i<nodes.length;i++){
+      for (var l=0;l<nodes[i];l++){
+          let x = (ww/nodes.length)*i+(ww/(nodes.length*2));
+          let y = (wh/nodes[i])*l + (wh/(nodes[i]*2.5));
+          let r = 50;
+          let n = new Node(x,y,r);
+          nodeData[i].push(n);
+
+      }
+
+    }
+
+  let totals = [${String(nn.wih.matrix)}].concat([${String(nn.who.matrix)}])
+  totals.sort((a,b) => a-b);
+
+  let weights = [${JSON.stringify(nn.wih.matrix)}, ${JSON.stringify(nn.who.matrix)}];
+  for (var sect=0;sect<weights.length;sect++){
+    for (var row=0;row<weights[sect].length;row++){
+      for (var dpt=0;dpt<weights[sect][row].length;dpt++){
+        let val = weights[sect][row][dpt];
+        let input_map = dpt;
+        let output_map = row;
+
+        let inputs = nodeData[sect];
+        let outputs = nodeData[sect + 1];
+
+        let min = totals[0];
+        let max = totals[totals.length-1];
+        console.log(min,max);
+
+        strokeWeight(map(val, min, max, 0, 2));
+        line(inputs[input_map].x, inputs[input_map].y, outputs[output_map].x, outputs[output_map].y);
+        
+      }
+    }
+  }
+
+  strokeWeight(1);
+  for (var i=0;i<nodeData.length;i++){
+    for (let node of nodeData[i]){
+      node.show();
+    }
+  }
+  
+
+  };
+  `
+  w.document.body.append(p5js_script);
+
+}
+
