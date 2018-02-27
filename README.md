@@ -1,3 +1,7 @@
+# Deprecated!
+
+* new repo: https://github.com/CodingTrain/Toy-Neural-Network-JS/
+
 # Simple Artificial Neural Network JavaScript library
 
 This repository is a library for creating simple vanilla 3-layer ANNs in JavaScript. I'm using it for the second edition of the [Nature of Code](http://natureofcode.com/) book, as well as examples for my ITP course: [Intelligence and Learning](https://github.com/shiffman/NOC-S17-2-Intelligence-Learning).
